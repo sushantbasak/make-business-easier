@@ -5,6 +5,7 @@ const mongoDB = appSettings.mongoDb;
 const {
   createUser,
   findUser,
+  findAllUser,
   getPassword,
   updateUser,
 } = require('./queries/user');
@@ -23,6 +24,7 @@ mongoose.connect(
 const dbStoreHandler = {
   createUser,
   findUser,
+  findAllUser,
   getPassword,
   updateUser,
 };

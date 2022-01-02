@@ -25,6 +25,18 @@ const findUser = async (data) => {
   return { result, status: 'USER_FOUND' };
 };
 
+const findAllUser = async (data) => {
+  const { result, hasError } = await dbStoreHandler.findAllUser(data);
+
+  if (hasError) {
+    return { status: 'ERROR_FOUND' };
+  }
+
+  if (result === null) return { status: 'NOT_FOUND' };
+
+  return { result, status: 'USER_FOUND' };
+};
+
 const getPassword = async (data) => {
   const { result, hasError } = await dbStoreHandler.getPassword(data);
 
@@ -53,6 +65,7 @@ const updateUser = async (filter, updateData) => {
 const userService = {
   createUser,
   findUser,
+  findAllUser,
   getPassword,
   updateUser,
 };

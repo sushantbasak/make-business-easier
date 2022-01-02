@@ -13,7 +13,10 @@ const { MESSAGES } = require('../../../constants');
 // Imports
 
 const { generateAuthToken, protect } = require('../middleware/auth');
+const { adminProtect } = require('../middleware/role');
+
 const { generateHash, compareHash, verifyHash } = require('../middleware/hash');
+const { sendEmailConfirmation } = require('../services/mailService');
 const { userSchema, loginSchema } = require('../validators/user.schema');
 
 // Functions
@@ -36,9 +39,16 @@ const createUser = async (req, res) => {
     if (registerUser.status === 'ERROR_FOUND')
       throw new Error('Unable to create a new User in database');
 
-    console.log(registerUser);
+    const sendMail = await sendEmailConfirmation(registerUser.result, req);
 
-    res.sendSuccess(registerUser.result, MESSAGES.api.CREATED, 201);
+    if (sendMail.status === 'ERROR_FOUND')
+      throw new Error('Unable to send Email Confirmation');
+
+    res.sendSuccess(
+      registerUser.result,
+      MESSAGES.api.CREATED,
+      httpCode.StatusCodes.CREATED
+    );
   } catch (ex) {
     ErrorHandler.extractError(ex);
     res.sendError(
@@ -71,7 +81,7 @@ const loginUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    const { email, _id } = req.query;
+    const { email, _id } = req.body;
 
     let data = { email, _id };
 
@@ -101,12 +111,29 @@ const getUser = async (req, res) => {
   }
 };
 
-const getProfile = async (req, res) => {
-  res.sendSuccess(req.user, MESSAGES.api.SUCCESS, httpCode.StatusCodes.OK);
+const getAllUser = async (req, res) => {
+  try {
+    const getUser = await vendorService.findAllUser({});
+
+    if (getUser.status === 'ERROR_FOUND')
+      throw new Error('Unable to fetch Queries from the database');
+
+    res.sendSuccess(
+      getUser.result,
+      MESSAGES.api.SUCCESS,
+      httpCode.StatusCodes.OK
+    );
+  } catch (ex) {
+    ErrorHandler.extractError(ex);
+    res.sendError(
+      httpCode.StatusCodes.INTERNAL_SERVER_ERROR,
+      MESSAGES.api.SOMETHING_WENT_WRONG
+    );
+  }
 };
 
-const logoutUser = (req, res) => {
-  res.send('Logout User');
+const getProfile = async (req, res) => {
+  res.sendSuccess(req.user, MESSAGES.api.SUCCESS, httpCode.StatusCodes.OK);
 };
 
 const updateUser = async (req, res) => {
@@ -188,7 +215,7 @@ const updateUser = async (req, res) => {
     if (updatedUser.status === 'ERROR_FOUND')
       throw new Error('Unable to Update User in Database');
 
-    if (user.status === 'NOT_FOUND') {
+    if (updatedUser.status === 'NOT_FOUND') {
       return res.sendError(
         httpCode.StatusCodes.BAD_REQUEST,
         MESSAGES.api.USER_NOT_FOUND
@@ -219,7 +246,7 @@ router.post(
   createUser
 );
 
-router.get(
+router.post(
   '/login',
   celebrate({
     body: loginSchema,
@@ -230,7 +257,9 @@ router.get(
 
 router.get('/profile', protect, getProfile);
 
-router.get('/search', protect, getUser);
+router.post('/search', protect, adminProtect, getUser);
+
+router.get('/all', protect, adminProtect, getAllUser);
 
 router.patch(
   '/update',
@@ -240,7 +269,5 @@ router.patch(
   }),
   updateUser
 );
-
-router.get('/logout', protect, logoutUser);
 
 module.exports = router;
