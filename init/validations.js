@@ -102,9 +102,7 @@ exports = module.exports = function (app) {
   }
 
   function isBoolean(value) {
-    return (
-      value === true || value === false || value === 'true' || value === 'false'
-    );
+    return value === true || value === false || value === 'true' || value === 'false';
   }
 
   app.use(

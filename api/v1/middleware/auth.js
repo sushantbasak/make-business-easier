@@ -35,11 +35,7 @@ const generateAuthToken = async (userId, expiry = false) => {
       secretValue = resetsecret;
     }
 
-    const token = await jwt.sign(
-      { id: userId, date: new Date().getTime() },
-      secretValue,
-      { expiresIn: expiryTime }
-    );
+    const token = await jwt.sign({ id: userId, date: new Date().getTime() }, secretValue, { expiresIn: expiryTime });
 
     return { status: 'SUCCESS', token };
   } catch (ex) {
@@ -59,17 +55,11 @@ const protect = async (req, res, next) => {
     });
 
     if (status === 'ERROR_FOUND') {
-      return res.sendError(
-        httpCode.StatusCodes.BAD_REQUEST,
-        MESSAGES.api.USER_NOT_FOUND
-      );
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.USER_NOT_FOUND);
     }
 
     if (result.isEmailConfirmed === false) {
-      return res.sendError(
-        httpCode.StatusCodes.OK,
-        MESSAGES.api.EMAIL_NOT_CONFIRMATION
-      );
+      return res.sendError(httpCode.StatusCodes.OK, MESSAGES.api.EMAIL_NOT_CONFIRMATION);
     }
 
     const pathname = url.parse(req.url, true).pathname;
@@ -81,10 +71,7 @@ const protect = async (req, res, next) => {
     next();
   } catch (ex) {
     ErrorHandler.extractError(ex);
-    return res.sendError(
-      httpCode.StatusCodes.UNAUTHORIZED,
-      MESSAGES.api.UNAUTHORIZED_USER
-    );
+    return res.sendError(httpCode.StatusCodes.UNAUTHORIZED, MESSAGES.api.UNAUTHORIZED_USER);
   }
 };
 
@@ -95,10 +82,7 @@ const confirmAuthToken = async (req, res, next) => {
     const pathname = url.parse(req.url, true).pathname;
 
     if (token === undefined) {
-      return res.sendError(
-        httpCode.StatusCodes.BAD_REQUEST,
-        MESSAGES.api.MISSING_QUERY_PARAMETER
-      );
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.MISSING_QUERY_PARAMETER);
     }
 
     let secretValue = resetsecret;
@@ -116,10 +100,7 @@ const confirmAuthToken = async (req, res, next) => {
     });
 
     if (status === 'ERROR_FOUND') {
-      return res.sendError(
-        httpCode.StatusCodes.BAD_REQUEST,
-        MESSAGES.api.USER_NOT_FOUND
-      );
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.USER_NOT_FOUND);
     }
 
     req.user = result;
@@ -127,10 +108,7 @@ const confirmAuthToken = async (req, res, next) => {
     next();
   } catch (ex) {
     ErrorHandler.extractError(ex);
-    return res.sendError(
-      httpCode.StatusCodes.UNAUTHORIZED,
-      MESSAGES.api.LINK_EXPIRED
-    );
+    return res.sendError(httpCode.StatusCodes.UNAUTHORIZED, MESSAGES.api.LINK_EXPIRED);
   }
 };
 

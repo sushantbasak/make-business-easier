@@ -1,6 +1,5 @@
-const { MESSAGES } = require('../constants')
+const { MESSAGES } = require('../constants');
 const httpCode = require('http-status-codes');
-
 
 /**
  * create's custom function on request and response object
@@ -16,10 +15,10 @@ const apiResponseGenerator = (req, res, next) => {
    * @param {number} status - status of response
    */
   const sendResponse = (dataObj, headers, status = httpCode.SUCCESS) => {
-    headers = headers || { 'Content-Type': 'application/json' }
-    res.writeHead(status, headers)
-    res.end(JSON.stringify(dataObj))
-  }
+    headers = headers || { 'Content-Type': 'application/json' };
+    res.writeHead(status, headers);
+    res.end(JSON.stringify(dataObj));
+  };
   /**
    * sends response based on parameters(Error in processing)
    * @param {number} status - status of response
@@ -32,11 +31,11 @@ const apiResponseGenerator = (req, res, next) => {
     const response = {
       success: false,
       message,
-      data: {}
-    }
-    console.error({ method: req.method, response })
-    sendResponse(response, headers, status)
-  }
+      data: {},
+    };
+    console.error({ method: req.method, response });
+    sendResponse(response, headers, status);
+  };
 
   /**
    * sends response based on parameters(Error Validations)
@@ -44,9 +43,9 @@ const apiResponseGenerator = (req, res, next) => {
    * @param {object} headers - header object
    */
   res.sendValidationError = (message, headers) => {
-    console.warn({ method: req.method, response: { code: httpCode.VALIDATION_ERROR } })
+    console.warn({ method: req.method, response: { code: httpCode.VALIDATION_ERROR } });
     res.sendError(httpCode.BAD_REQUEST, message, headers);
-  }
+  };
 
   /**
    * sends response based on parameters(Success in processinh)
@@ -56,18 +55,18 @@ const apiResponseGenerator = (req, res, next) => {
    * @param {string} code - custom code to be sent in response
    * @param {object} headers - header object
    */
-  res.sendSuccess = (payload, message, status= httpCode.OK, headers) => {
+  res.sendSuccess = (payload, message, status = httpCode.OK, headers) => {
     const response = {
-      success:true,
+      success: true,
       data: payload,
-      message: message || MESSAGES.api.SUCCESS
-    }
-    console.info({ method: req.method, response: JSON.parse(JSON.stringify(response)) })
-    sendResponse(response, headers, status)
-  }
-  next()
-}
+      message: message || MESSAGES.api.SUCCESS,
+    };
+    console.info({ method: req.method, response: JSON.parse(JSON.stringify(response)) });
+    sendResponse(response, headers, status);
+  };
+  next();
+};
 
 module.exports = {
-  apiResponseGenerator
-}
+  apiResponseGenerator,
+};

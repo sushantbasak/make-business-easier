@@ -49,10 +49,7 @@ const getPassword = async (data) => {
 };
 
 const updateUser = async (filter, updateData) => {
-  const { result, hasError } = await dbStoreHandler.updateUser(
-    filter,
-    updateData
-  );
+  const { result, hasError } = await dbStoreHandler.updateUser(filter, updateData);
 
   if (result === null) return { status: 'NOT_FOUND' };
 
