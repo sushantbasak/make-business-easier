@@ -4,11 +4,12 @@
   "main": "index.js",
   "scripts": {
     "test": "npm test",
-    "lint": "eslint api/ middleware/",
     "start": "nodemon index.js",
     "live": "nodemon index.js",
     "cluster": "pm2 start index.js -i 4",
-    "start:staging": "forever start index.js"
+    "start:staging": "forever start index.js",
+    "lint": "eslint --ext .js api/",
+    "lint:fix": "eslint --fix --ext .js api/"
   },
   "keywords": [
     "Commerce",
