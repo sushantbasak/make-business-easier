@@ -57,7 +57,7 @@
     }
   },
   "lint-staged": {
-    "/api": [
+    "/api/**/*.js": [
       "eslint --fix",
       "git add"
     ]
