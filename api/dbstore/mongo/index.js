@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const appSettings = require('../../../config');
+
 const mongoDB = appSettings.mongoDb;
 
 const { createUser, findUser, findAllUser, getPassword, updateUser } = require('./queries/user');

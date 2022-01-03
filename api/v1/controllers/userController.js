@@ -31,7 +31,7 @@ const createUser = async (req, res) => {
 
     if (getHashedPassword.status === 'ERROR_FOUND') throw new Error('Unable to generate Hash of given password');
 
-    user['password'] = getHashedPassword.hash;
+    user.password = getHashedPassword.hash;
 
     const registerUser = await userService.createUser(user);
 
@@ -65,7 +65,7 @@ const getUser = async (req, res) => {
   try {
     const { email, _id } = req.body;
 
-    let data = { email, _id };
+    const data = { email, _id };
 
     if (email === undefined) delete data.email;
 
@@ -120,7 +120,7 @@ const updateUser = async (req, res) => {
     let flag = false;
 
     for (let i = 0; i < updates.length; i++) {
-      let data = updates[i];
+      const data = updates[i];
 
       if (data === 'password' && req.body[data].length) {
         const password = req.body[data];

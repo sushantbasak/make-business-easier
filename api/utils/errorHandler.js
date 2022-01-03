@@ -1,5 +1,3 @@
-'use strict';
-
 const sentry = require('@sentry/node');
 const { red } = require('chalk');
 
@@ -10,7 +8,7 @@ const extractError = (error) => {
 };
 
 const ErrorHandler = {
-  extractError: extractError,
+  extractError,
 };
 
 module.exports = ErrorHandler;

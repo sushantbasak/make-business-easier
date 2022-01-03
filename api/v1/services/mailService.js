@@ -7,6 +7,7 @@ const ErrorHandler = require('../../utils/errorHandler');
 const sendMail = require('../../../init/mail');
 const { generateAuthToken } = require('../middleware/auth');
 const appSettings = require('../../../config/index');
+
 const { reactUrl, serverUrl } = appSettings;
 
 // Functions
@@ -17,9 +18,9 @@ const sendEmailConfirmation = async (user, req) => {
 
     if (confirmEmailToken.status === 'ERROR_FOUND') throw new Error('Unable to generate Auth Token');
 
-    const backendURL = serverUrl + `/api/v1/auth/confirmemail?token=${confirmEmailToken.token}`;
+    const backendURL = `${serverUrl}/api/v1/auth/confirmemail?token=${confirmEmailToken.token}`;
 
-    const frontendURL = reactUrl + `/confirm?token=${confirmEmailToken.token}`;
+    const frontendURL = `${reactUrl}/confirm?token=${confirmEmailToken.token}`;
 
     const message = `You are receiving this email because you need to confirm your email address. <br/>
     Please Click on this link to Activate: <a href= ${frontendURL}>Link</a> <br/> <br/>
@@ -51,9 +52,9 @@ const sendResetPasswordLink = async (user, req) => {
 
     if (resetPasswordToken.status === 'ERROR_FOUND') throw new Error('Unable to generate Auth Token');
 
-    const backendURL = serverUrl + `/api/v1/auth/reset?token=${resetPasswordToken.token}`;
+    const backendURL = `${serverUrl}/api/v1/auth/reset?token=${resetPasswordToken.token}`;
 
-    const frontendURL = reactUrl + `/reset?token=${resetPasswordToken.token}`;
+    const frontendURL = `${reactUrl}/reset?token=${resetPasswordToken.token}`;
 
     const message = `You are receiving this email because you requested for Password Update. <br/>
     Please Click on this link to generate New Password:  <a href= ${frontendURL}>Link</a> <br/> <br/>
