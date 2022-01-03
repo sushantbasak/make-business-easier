@@ -8,8 +8,8 @@
     "live": "nodemon index.js",
     "cluster": "pm2 start index.js -i 4",
     "start:staging": "forever start index.js",
-    "lint": "eslint --ext .js api/",
-    "lint:fix": "eslint --fix --ext .js api/"
+    "lint": "eslint --ext .js",
+    "lint:fix": "eslint --fix --ext .js"
   },
   "keywords": [
     "Commerce",
@@ -43,7 +43,6 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
-    "eslint": "^8.6.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.4",
