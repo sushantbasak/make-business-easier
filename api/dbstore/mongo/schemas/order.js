@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {COLLECTIONS} = require('../../../../constants');
+const { COLLECTIONS } = require('../../../../constants');
 
 const orderSchema = new mongoose.Schema({
     buyer: {
