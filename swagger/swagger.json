@@ -1,0 +1,11 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Make Business Easier",
+    "description": "",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "sushantbasak73@gmail.com"
+    }
+  }
+}
