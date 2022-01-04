@@ -1,4 +1,4 @@
-'use strict';
+
 
 const mongoose = require('mongoose');
 const { COLLECTIONS } = require('../../../../constants');

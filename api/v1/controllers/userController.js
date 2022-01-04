@@ -1,3 +1,8 @@
+/* eslint-disable no-continue */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable consistent-return */
+
 // Library
 
 const router = require('express').Router();
@@ -9,11 +14,11 @@ const { celebrate } = require('celebrate');
 const ErrorHandler = require('../../utils/errorHandler');
 const userService = require('../services/userService');
 const { MESSAGES } = require('../../../constants');
+const { adminProtect } = require('../middleware/admin');
 
 // Imports
 
 const { generateAuthToken, protect } = require('../middleware/auth');
-const { adminProtect } = require('../middleware/role');
 
 const { generateHash, compareHash, verifyHash } = require('../middleware/hash');
 const { sendEmailConfirmation } = require('../services/mailService');
@@ -32,7 +37,7 @@ const createUser = async (req, res) => {
     if (getHashedPassword.status === 'ERROR_FOUND')
       throw new Error('Unable to generate Hash of given password');
 
-    user['password'] = getHashedPassword.hash;
+    user.password = getHashedPassword.hash;
 
     const registerUser = await userService.createUser(user);
 
@@ -83,7 +88,7 @@ const getUser = async (req, res) => {
   try {
     const { email, _id } = req.body;
 
-    let data = { email, _id };
+    const data = { email, _id };
 
     if (email === undefined) delete data.email;
 
@@ -102,7 +107,7 @@ const getUser = async (req, res) => {
     }
 
     res.sendSuccess(MESSAGES.api.USER_FOUND, httpCode.StatusCodes.OK);
-  } catch {
+  } catch (ex) {
     ErrorHandler.extractError(ex);
     res.sendError(
       httpCode.StatusCodes.INTERNAL_SERVER_ERROR,
@@ -113,7 +118,8 @@ const getUser = async (req, res) => {
 
 const getAllUser = async (req, res) => {
   try {
-    const getUser = await vendorService.findAllUser({});
+    // eslint-disable-next-line no-shadow
+    const getUser = await userService.findAllUser({});
 
     if (getUser.status === 'ERROR_FOUND')
       throw new Error('Unable to fetch Queries from the database');
@@ -158,8 +164,8 @@ const updateUser = async (req, res) => {
   try {
     let flag = false;
 
-    for (let i = 0; i < updates.length; i++) {
-      let data = updates[i];
+    for (let i = 0; i < updates.length; i += 1) {
+      const data = updates[i];
 
       if (data === 'password' && req.body[data].length) {
         const password = req.body[data];

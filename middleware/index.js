@@ -1,15 +1,12 @@
-'use strict';
-
 const express = require('express');
-const appSettings = require('./../config');
-const api = require('../api');
+const boom = require('express-boom');
 const bodyParser = require('body-parser');
-var boom = require('express-boom');
-const { celebrate, Joi, errors, isCelebrate } = require('celebrate');
+const { isCelebrate } = require('celebrate');
 const fileUpload = require('express-fileupload');
+const compression = require('compression');
 const { apiResponseGenerator } = require('../init/bootstrap');
 const expressValidator = require('../init/validations');
-const compression = require('compression');
+const api = require('../api');
 // const cors = require('cors');
 const middleware = async () => {
   const app = express();

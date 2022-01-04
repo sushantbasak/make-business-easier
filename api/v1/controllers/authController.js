@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 // Library
 
 const router = require('express').Router();
