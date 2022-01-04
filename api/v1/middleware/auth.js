@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 // Library
 
 const jwt = require('jsonwebtoken');
@@ -6,17 +7,16 @@ const url = require('url');
 
 // Services
 
-const appSettings = require('../../../config/index');
 const ErrorHandler = require('../../utils/errorHandler');
 const { MESSAGES } = require('../../../constants');
 // const {
 //   jwt: { secret, expiresIn, resetsecret, resetexpiresIn },
 // } = appSettings;
 
-const secret = 'hello',
-  expiresIn = '365d',
-  resetsecret = 'fsew^y%?X4eqz5XzG2',
-  resetexpiresIn = '15m';
+const secret = 'hello';
+const expiresIn = '365d';
+const resetsecret = 'fsew^y%?X4eqz5XzG2';
+const resetexpiresIn = '15m';
 
 // Imports
 
@@ -26,8 +26,8 @@ const userService = require('../services/userService');
 
 const generateAuthToken = async (userId, expiry = false) => {
   try {
-    let expiryTime = expiresIn,
-      secretValue = secret;
+    let expiryTime = expiresIn;
+    let secretValue = secret;
 
     if (expiry) {
       expiryTime = resetexpiresIn;
@@ -72,7 +72,7 @@ const protect = async (req, res, next) => {
       );
     }
 
-    const pathname = url.parse(req.url, true).pathname;
+    const { pathname } = url.parse(req.url, true);
 
     if (pathname === '/update') req.body = { ...req.body, mode: 0 };
 
@@ -92,7 +92,7 @@ const confirmAuthToken = async (req, res, next) => {
   try {
     const token = req.header('Authorization').replace('Bearer ', '');
 
-    const pathname = url.parse(req.url, true).pathname;
+    const { pathname } = url.parse(req.url, true);
 
     if (token === undefined) {
       return res.sendError(

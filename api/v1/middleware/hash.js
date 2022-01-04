@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-underscore-dangle */
 // Library
 
 const bcrypt = require('bcryptjs');

@@ -1,5 +1,3 @@
-'use strict';
-
 require('dotenv').config();
 
 const config = {
@@ -22,6 +20,6 @@ const config = {
   },
 };
 
-const appSettings = { ...config['development'] };
+const appSettings = { ...config.development };
 
 module.exports = appSettings;

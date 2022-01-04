@@ -1,22 +1,17 @@
-'use strict';
-
 const express = require('express');
-const appSettings = require('./../config');
-const api = require('../api');
+const boom = require('express-boom');
 const bodyParser = require('body-parser');
-var boom = require('express-boom');
-const { celebrate, Joi, errors, isCelebrate } = require('celebrate');
+const { isCelebrate } = require('celebrate');
 const fileUpload = require('express-fileupload');
-const { apiResponseGenerator } = require('../init/bootstrap');
-const expressValidator = require('../init/validations');
 const compression = require('compression');
-// const cors = require('cors');
+const { apiResponseGenerator } = require('../init/bootstrap');
+const api = require('../api');
+
 const middleware = async () => {
   const app = express();
 
   app.use(boom());
   app.use(fileUpload());
-  // app.use(cors());
 
   // enable cross domain access
   app.use((req, res, next) => {
@@ -42,7 +37,6 @@ const middleware = async () => {
   // parse application/json
   app.use(bodyParser.json({ limit: '30mb' }));
   app.use(apiResponseGenerator);
-  expressValidator(app);
 
   // connect to api
   app.use('/api', api);
@@ -53,15 +47,6 @@ const middleware = async () => {
     }
     next();
   });
-
-  // app.use((err, req, res, next) => {
-  //   logger.warn(err);
-  //   if (isProd) Sentry.captureException(err);
-  //   return res.status(400).send(err);
-  // });
-  // register sentry event tracker
-  // app.use(sentry.Handlers.errorHandler())
-  // add any error handlers last
 
   return app;
 };
