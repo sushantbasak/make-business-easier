@@ -5,17 +5,17 @@ const orderSchema = new mongoose.Schema({
     buyer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
-        required: true
+        required: [true, "Please add a buyer"]
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
-        required: true
+        required: [true, "Please add a seller"]
     },
     gig: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'gig',
-        required: true
+        required: [true, "Please add the gig"]
     },
     status: {
         type: String,
@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
     },
     messages: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: message
+        ref: 'message'
     },
     created: {
         type: Date,
@@ -32,4 +32,4 @@ const orderSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model(COLLECTION.ORDER, orderSchema);
+module.exports = mongoose.model(COLLECTIONS.ORDER, orderSchema);

@@ -8,9 +8,11 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger/swagger.json');
 const { apiResponseGenerator } = require('../init/bootstrap');
 const api = require('../api');
+const { Gig, User, Order, Message } = require('../api/dbstore/mongo/schemas');
 
 const middleware = async () => {
   const app = express();
+
 
   app.use(boom());
   app.use(fileUpload());
