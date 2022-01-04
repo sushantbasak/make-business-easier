@@ -19,6 +19,7 @@ mongoose.connect(
     useFindAndModify: false,
     useUnifiedTopology: true,
   },
+  // eslint-disable-next-line no-console
   () => console.log(`Database Connected on ${mongoDB}`)
 );
 
