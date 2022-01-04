@@ -20,6 +20,6 @@ const config = {
   },
 };
 
-const appSettings = { ...config['development'] };
+const appSettings = { ...config.development };
 
 module.exports = appSettings;
