@@ -5,7 +5,523 @@
     "description": "",
     "termsOfService": "http://swagger.io/terms/",
     "contact": {
-      "email": "sushantbasak73@gmail.com"
+      "email": "sushant.basak@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001/api/v1/",
+      "description": "Local"
+    },
+    {
+      "url": "https://make-business-easier-2311.herokuapp.com/api/v1/",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User",
+      "description": "Operations about user"
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication Processes for user"
+    }
+  ],
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create user",
+        "description": "This route is for the creation of New Users. User need to fill all the required details mentioned there.",
+        "operationId": "createUser",
+        "requestBody": {
+          "description": "User need to fill all the field mentioned below. Check Schema for password format.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "Jon"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Snow"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "helloworld@earth.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Must have at least one lowercase & uppercase letter, number and special symbol (?!@$%^*-). Length must be greater than 8 & less than 30",
+                    "example": "1Ss1.@jpdffD1"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "description": "Must match with password",
+                    "example": "1Ss1.@jpdffD1"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Id"
+                    },
+                    {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Logs user into the system",
+        "operationId": "loginUser",
+        "requestBody": {
+          "description": "User need to fill all the field mentioned below. Check Schema for password format.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "helloworld@earth.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Must have at least one lowercase & uppercase letter, number and special symbol (?!@$%^*-). Length must be greater than 8 & less than 30",
+                    "example": "1Ss1.@jpdffD1"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Id"
+                    },
+                    {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/profile": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User"],
+        "summary": "User gets his profile",
+        "operationId": "user",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Id"
+                    },
+                    {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized User",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/search": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User"],
+        "summary": "Search user by his Email or User Id.",
+        "description": "Admin must pass either Email or User id or both to search whether the required user is registered or not.",
+        "operationId": "userSearch",
+        "requestBody": {
+          "description": "User need to fill all the field mentioned below.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "helloworld@earth.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User Profile Found"
+          },
+          "401": {
+            "description": "Unauthorized User"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/all": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User"],
+        "summary": "Get All Users",
+        "description": "This route is for getting all Users. Admin Access Required. Array of all the users will be returned as a response.",
+        "operationId": "userAll",
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Id"
+                    },
+                    {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized User"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/update": {
+      "patch": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User"],
+        "summary": "User can update his first Name, Last Name or Email Address",
+        "description": "This route is for the creation of New Users.",
+        "operationId": "updateUser",
+        "requestBody": {
+          "description": "Only firstName, lastName or Email can be updated.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "Jon"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Snow"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "helloworld@earth.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Operation",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/confirmemail": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Email Verification",
+        "operationId": "confirmEmail",
+        "description": "This route is used for verification of Email. User need to pass the token that is sent over in his mail after registration.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "The user email confirmation token",
+            "required": true,
+            "allowReserved": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Email Confirmed"
+          },
+          "400": {
+            "description": "Invalid Token supplied",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/forgetpassword": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get Forget Password Reset Link",
+        "operationId": "forgetPassword",
+        "description": "This route is used for generation of password reset Link for the User.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "User Email for which reset link is generated.",
+            "required": true,
+            "allowReserved": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password Reset Link is send to the Registered Email."
+          },
+          "400": {
+            "description": "Invalid Token supplied",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/reset": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Reset User Password",
+        "operationId": "resetPassword",
+        "description": "This route is used to reset Password for the registered User.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Reset Password Token that is send over to Mail.",
+            "required": true,
+            "allowReserved": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Must have at least one lowercase & uppercase letter, number and special symbol (?!@$%^*-). Length must be greater than 8 & less than 30",
+                    "example": "1Ss1.@jpdffD1"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "description": "Must match with password",
+                    "example": "1Ss1.@jpdffD1"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Operation",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Id": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "format": "object-id",
+            "example": "6149eb11ffd87ff6bf96321a"
+          }
+        }
+      },
+      "CreatedAt": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ExpiryAt": {
+        "type": "object",
+        "properties": {
+          "expiryAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Jon"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Snow"
+          },
+          "email": {
+            "type": "string",
+            "example": "helloworld@earth.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "role": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isPasswordReset": {
+            "type": "boolean",
+            "default": false
+          },
+          "isEmailConfirmed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "data": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }
