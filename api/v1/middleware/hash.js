@@ -47,7 +47,7 @@ const verifyHash = async (encryptedPassword, password) => {
 
 const compareHash = async (req, res, next) => {
   try {
-    const { email, password } = req.query;
+    const { email, password } = req.body;
 
     if (!email || !password)
       return res.sendError(
