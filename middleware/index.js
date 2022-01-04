@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const { isCelebrate } = require('celebrate');
 const fileUpload = require('express-fileupload');
 const compression = require('compression');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger/swagger.json');
 const { apiResponseGenerator } = require('../init/bootstrap');
 const api = require('../api');
 
@@ -37,6 +39,10 @@ const middleware = async () => {
   // parse application/json
   app.use(bodyParser.json({ limit: '30mb' }));
   app.use(apiResponseGenerator);
+
+  // connect to swagger UI
+  app.use('/', swaggerUi.serve);
+  app.get('/', swaggerUi.setup(swaggerDocument));
 
   // connect to api
   app.use('/api', api);

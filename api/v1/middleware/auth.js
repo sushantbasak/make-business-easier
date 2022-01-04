@@ -7,16 +7,13 @@ const url = require('url');
 
 // Services
 
+const appSettings = require('../../../config/index');
 const ErrorHandler = require('../../utils/errorHandler');
 const { MESSAGES } = require('../../../constants');
-// const {
-//   jwt: { secret, expiresIn, resetsecret, resetexpiresIn },
-// } = appSettings;
 
-const secret = 'hello';
-const expiresIn = '365d';
-const resetsecret = 'fsew^y%?X4eqz5XzG2';
-const resetexpiresIn = '15m';
+const {
+  jwt: { secret, expiresIn, resetsecret, resetexpiresIn },
+} = appSettings;
 
 // Imports
 
@@ -50,6 +47,13 @@ const generateAuthToken = async (userId, expiry = false) => {
 
 const protect = async (req, res, next) => {
   try {
+    if (req.header('Authorization') === undefined) {
+      return res.sendError(
+        httpCode.StatusCodes.BAD_REQUEST,
+        MESSAGES.api.MISSING_BEARER_TOKEN
+      );
+    }
+
     const token = req.header('Authorization').replace('Bearer ', '');
 
     const decoded = await jwt.verify(token, secret);
@@ -88,11 +92,9 @@ const protect = async (req, res, next) => {
   }
 };
 
-const confirmAuthToken = async (req, res, next) => {
+const resetPasswordToken = async (req, res, next) => {
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
-
-    const { pathname } = url.parse(req.url, true);
+    const { token } = req.query;
 
     if (token === undefined) {
       return res.sendError(
@@ -101,15 +103,9 @@ const confirmAuthToken = async (req, res, next) => {
       );
     }
 
-    let secretValue = resetsecret;
+    req.body = { ...req.body, mode: 0 };
 
-    if (pathname === '/confirmemail') {
-      secretValue = secret;
-    }
-
-    if (pathname === '/reset') req.body = { ...req.body, mode: 0 };
-
-    const decoded = await jwt.verify(token, secretValue);
+    const decoded = await jwt.verify(token, resetsecret);
 
     const { result, status } = await userService.findUser({
       _id: decoded.id,
@@ -134,4 +130,45 @@ const confirmAuthToken = async (req, res, next) => {
   }
 };
 
-module.exports = { generateAuthToken, protect, confirmAuthToken };
+const confirmEmailToken = async (req, res, next) => {
+  try {
+    const { token } = req.query;
+
+    if (token === undefined) {
+      return res.sendError(
+        httpCode.StatusCodes.BAD_REQUEST,
+        MESSAGES.api.MISSING_QUERY_PARAMETER
+      );
+    }
+
+    const decoded = await jwt.verify(token, secret);
+
+    const { result, status } = await userService.findUser({
+      _id: decoded.id,
+    });
+
+    if (status === 'ERROR_FOUND') {
+      return res.sendError(
+        httpCode.StatusCodes.BAD_REQUEST,
+        MESSAGES.api.USER_NOT_FOUND
+      );
+    }
+
+    req.user = result;
+
+    next();
+  } catch (ex) {
+    ErrorHandler.extractError(ex);
+    return res.sendError(
+      httpCode.StatusCodes.UNAUTHORIZED,
+      MESSAGES.api.LINK_EXPIRED
+    );
+  }
+};
+
+module.exports = {
+  generateAuthToken,
+  protect,
+  resetPasswordToken,
+  confirmEmailToken,
+};
