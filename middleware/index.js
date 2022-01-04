@@ -5,15 +5,13 @@ const { isCelebrate } = require('celebrate');
 const fileUpload = require('express-fileupload');
 const compression = require('compression');
 const { apiResponseGenerator } = require('../init/bootstrap');
-const expressValidator = require('../init/validations');
 const api = require('../api');
-// const cors = require('cors');
+
 const middleware = async () => {
   const app = express();
 
   app.use(boom());
   app.use(fileUpload());
-  // app.use(cors());
 
   // enable cross domain access
   app.use((req, res, next) => {
@@ -39,7 +37,6 @@ const middleware = async () => {
   // parse application/json
   app.use(bodyParser.json({ limit: '30mb' }));
   app.use(apiResponseGenerator);
-  expressValidator(app);
 
   // connect to api
   app.use('/api', api);
@@ -50,15 +47,6 @@ const middleware = async () => {
     }
     next();
   });
-
-  // app.use((err, req, res, next) => {
-  //   logger.warn(err);
-  //   if (isProd) Sentry.captureException(err);
-  //   return res.status(400).send(err);
-  // });
-  // register sentry event tracker
-  // app.use(sentry.Handlers.errorHandler())
-  // add any error handlers last
 
   return app;
 };
