@@ -59,8 +59,7 @@
   },
   "lint-staged": {
     "api/ middleware/": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
   "description": ""
