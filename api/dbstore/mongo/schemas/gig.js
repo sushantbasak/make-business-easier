@@ -4,7 +4,7 @@ const {COLLECTIONS} = require('../../../../constants');
 const gigSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: COLLECTIONS.USER
     },
     title: {
         type: String,
@@ -35,4 +35,6 @@ const gigSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model(COLLECTIONS.GIG, gigSchema);
+module.exports = {
+  schema: mongoose.model(COLLECTIONS.GIG, gigSchema)
+};

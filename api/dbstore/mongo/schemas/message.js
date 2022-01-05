@@ -4,7 +4,7 @@ const { COLLECTIONS } = require('../../../../constants');
 const messageSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: COLLECTIONS.USER
     },
     content: {
         type: String
@@ -15,4 +15,6 @@ const messageSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model(COLLECTIONS.MESSAGE, messageSchema);
+module.exports = {
+  schema: mongoose.model(COLLECTIONS.MESSAGE, messageSchema)
+};
