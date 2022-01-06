@@ -25,8 +25,9 @@ const userSchema = new mongoose.Schema({
     maxlength: [20, 'Phone number can not be longer than 20 characters'],
   },
   role: {
-    type: Number,
-    default: 0,
+    type: String,
+    enum: ['root', 'admin', 'seller', 'customer'],
+    default: 'customer',
   },
   password: {
     type: String,
@@ -44,6 +45,18 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  gigs: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'gig'
+    }
+  ],
+  cart: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'gig'
+    }
+  ]
 });
 
 module.exports = {
