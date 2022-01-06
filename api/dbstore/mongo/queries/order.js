@@ -4,8 +4,7 @@ const ErrorHandler = require('../../../utils/errorHandler');
 const createOrder = async (body) => {
     try {
         const order = await Order.schema.create(body);
-        const result = order ? order.toJSON() : null;
-        return {result: result, hasError: null}
+        return {result: order, hasError: null}
     } catch(err) {
         ErrorHandler.extractError(err);
         return {result: null, hasError: true};
@@ -15,8 +14,7 @@ const createOrder = async (body) => {
 const findOrder = async (body) => {
   try {
       const order = await Order.schema.findOne(body);
-      const result = order ? order.toJSON() : null;
-      return {result: result, hasError: null};
+      return {result: order, hasError: null};
   } catch(err) {
       ErrorHandler.extractError(err);
       return {result: null, hasError: true}; 

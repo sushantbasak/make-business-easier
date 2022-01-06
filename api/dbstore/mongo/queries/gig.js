@@ -4,8 +4,7 @@ const ErrorHandler = require('../../../utils/errorHandler');
 const createGig = async (body) => {
     try {
         const gig = await Gig.schema.create(body);
-        const result = gig ? gig.toJSON() : null;
-        return {result: result, hasError: null}
+        return {result: gig, hasError: null}
     } catch(err) {
         ErrorHandler.extractError(err);
         return {result: null, hasError: true};
@@ -15,8 +14,7 @@ const createGig = async (body) => {
 const findGig = async (body) => {
   try {
       const gig = await Gig.schema.findOne(body);
-      const result = gig ? gig.toJSON() : null;
-      return {result: result, hasError: null};
+      return {result: gig, hasError: null};
   } catch(err) {
       ErrorHandler.extractError(err);
       return {result: null, hasError: true};

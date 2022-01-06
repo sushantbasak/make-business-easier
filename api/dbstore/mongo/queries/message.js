@@ -4,8 +4,7 @@ const ErrorHandler = require('../../../utils/errorHandler');
 const createMessage = async (body) => {
     try {
         const message = await Message.schema.create(body);
-        const result = message ? message.toJSON() : null;
-        return {result: result, hasError: null}
+        return {result: message, hasError: null}
     } catch(err) {
         ErrorHandler.extractError(err);
         return {result: null, hasError: true};
@@ -15,8 +14,7 @@ const createMessage = async (body) => {
 const findMessage = async (body) => {
   try {
       const message = await Message.schema.findOne(body);
-      const result = message ? message.toJSON() : null;
-      return {result: result, hasError: null};
+      return {result: message, hasError: null};
   } catch(err) {
       ErrorHandler.extractError(err);
       return {result: null, hasError: true};
