@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { COLLECTIONS } = require('../../../../constants');
+const { COLLECTIONS, ROLES } = require('../../../../constants');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -25,8 +25,9 @@ const userSchema = new mongoose.Schema({
     maxlength: [20, 'Phone number can not be longer than 20 characters'],
   },
   role: {
-    type: Number,
-    default: 0,
+    type: String,
+    enum: [...ROLES],
+    default: ROLES.CUSTOMER,
   },
   password: {
     type: String,
@@ -44,6 +45,18 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  gigs: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: COLLECTIONS.GIG,
+    }
+  ],
+  cart: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: COLLECTIONS.GIG,
+    }
+  ]
 });
 
 module.exports = {
