@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { COLLECTIONS } = require('../../../../constants');
+const { COLLECTIONS, ROLES } = require('../../../../constants');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -26,8 +26,8 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['root', 'admin', 'seller', 'customer'],
-    default: 'customer',
+    enum: [...ROLES],
+    default: ROLES.CUSTOMER,
   },
   password: {
     type: String,
@@ -48,13 +48,13 @@ const userSchema = new mongoose.Schema({
   gigs: [
     {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: 'gig'
+      ref: COLLECTIONS.GIG,
     }
   ],
   cart: [
     {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: 'gig'
+      ref: COLLECTIONS.GIG,
     }
   ]
 });
