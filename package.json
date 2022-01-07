@@ -60,7 +60,7 @@
     }
   },
   "lint-staged": {
-    "api/ middleware/": [
+    "*.js": [
       "eslint --fix"
     ]
   },

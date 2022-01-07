@@ -49,14 +49,14 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.SchemaTypes.ObjectId,
       ref: COLLECTIONS.GIG,
-    }
+    },
   ],
   cart: [
     {
       type: mongoose.SchemaTypes.ObjectId,
       ref: COLLECTIONS.GIG,
-    }
-  ]
+    },
+  ],
 });
 
 module.exports = {
