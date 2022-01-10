@@ -29,10 +29,9 @@ const findAllGig = async (data) => {
   if (hasError) {
     return { status: "ERROR_FOUND" };
   }
-  if (!result) {
+  if (result.length === 0) {
     return { status: "NOT_FOUND" };
   }
-
   return { result, status: "GIGS_FOUND" };
 };
 
