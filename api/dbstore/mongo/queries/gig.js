@@ -1,5 +1,5 @@
-const { Gig } = require('../schemas');
-const ErrorHandler = require('../../../utils/errorHandler');
+const { Gig } = require("../schemas");
+const ErrorHandler = require("../../../utils/errorHandler");
 
 const createGig = async (body) => {
   try {
@@ -47,4 +47,14 @@ const updateGig = async (filter, update) => {
   }
 };
 
-module.exports = { createGig, findGig, findAllGig, updateGig };
+const deleteGig = async (body) => {
+  try {
+    const gig = await Gig.schema.deleteOne(body);
+    return { result: gig, hasError: null };
+  } catch (err) {
+    ErrorHandler.extractError(err);
+    return { result: null, hasError: true };
+  }
+};
+
+module.exports = { createGig, findGig, findAllGig, updateGig, deleteGig };
