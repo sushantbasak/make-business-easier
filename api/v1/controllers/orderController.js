@@ -29,7 +29,11 @@ const createOrder = async (req, res) => {
       throw new Error('Unable to Create new Order in the database');
     }
 
-    if (gig.status === 'NOT_FOUND' || gig.result.isActive === false || gig.result.owner.str === buyerId.str) {
+    if (
+      gig.status === 'NOT_FOUND' ||
+      gig.result.isActive === false ||
+      gig.result.owner.toString() === buyerId.toString()
+    ) {
       throw new Error('Invalid Gig');
     }
 
@@ -47,8 +51,35 @@ const createOrder = async (req, res) => {
   }
 };
 
+const getOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.user._id;
+
+    const order = await orderService.findOrder({ _id: orderId });
+
+    if (order.status === 'ERROR_FOUND') {
+      throw new Error('Unable to process the request');
+    }
+
+    if (order.status === 'NOT_FOUND') {
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.NOT_FOUND);
+    }
+
+    if (!(order.result.buyer.toString() === userId.str || order.result.seller.toString() === userId.toString())) {
+      return res.sendError(httpCode.StatusCodes.FORBIDDEN, MESSAGES.api.UNAUTHORIZED_USER);
+    }
+
+    return res.sendSuccess(order.result, MESSAGES.api.FOUND, httpCode.StatusCodes.OK);
+  } catch (err) {
+    ErrorHandler.extractError(err);
+    return res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
+  }
+};
+
 // order routes
 
 router.post('/', protect, createOrder);
+router.get('/:orderId', protect, getOrder);
 
 module.exports = router;

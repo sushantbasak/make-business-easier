@@ -1,19 +1,13 @@
-const mongoose = require("mongoose");
-const appSettings = require("../../../config");
+const mongoose = require('mongoose');
+const appSettings = require('../../../config');
 
 const mongoDB = appSettings.mongoDb;
 
-const userQueries = require("./queries/user");
-const gigQueries = require("./queries/gig");
-const {
-  createUser,
-  findUser,
-  findAllUser,
-  getPassword,
-  updateUser,
-} = require("./queries/user");
+const userQueries = require('./queries/user');
+const gigQueries = require('./queries/gig');
+const { createUser, findUser, findAllUser, getPassword, updateUser } = require('./queries/user');
 
-const { createOrder } = require("./queries/order");
+const { createOrder, findOrder } = require('./queries/order');
 
 mongoose.connect(
   mongoDB,
@@ -36,6 +30,7 @@ const dbStoreHandler = {
   getPassword,
   updateUser,
   createOrder,
+  findOrder,
 };
 
 module.exports = dbStoreHandler;
