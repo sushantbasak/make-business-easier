@@ -145,11 +145,9 @@ const getProfile = async (req, res) => {
 const updateUser = async (req, res) => {
   delete req.body.mode;
 
-  delete req.body.confirmPassword;
-
   const updates = Object.keys(req.body);
 
-  const allowedUpdates = ['firstName', 'lastName', 'email', 'password'];
+  const allowedUpdates = ['firstName', 'lastName', 'email'];
 
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
