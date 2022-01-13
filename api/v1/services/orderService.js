@@ -23,9 +23,35 @@ const findOrder = async (data) => {
   return { result, status: 'ORDER_FOUND' };
 };
 
+const updateOrder = async (filter, update) => {
+  const { result, hasError } = await dbStoreHandler.updateOrder(filter, update);
+
+  if (hasError) {
+    return { status: 'ERROR_FOUND' };
+  }
+
+  if (result === null) return { status: 'NOT_FOUND' };
+
+  return { result, status: 'ORDER_UPDATED' };
+};
+
+const findAllOrder = async (data) => {
+  const { result, hasError } = await dbStoreHandler.findAllOrder(data);
+
+  if (hasError) {
+    return { status: 'ERROR_FOUND' };
+  }
+
+  if (result === null) return { status: 'NOT_FOUND' };
+
+  return { result, status: 'ORDER_FOUND' };
+};
+
 const orderService = {
   createOrder,
   findOrder,
+  updateOrder,
+  findAllOrder,
 };
 
 module.exports = orderService;

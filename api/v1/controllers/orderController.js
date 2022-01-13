@@ -77,9 +77,36 @@ const getOrder = async (req, res) => {
   }
 };
 
+const updateOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const sellerId = req.user._id;
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['status'];
+
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.validations.INVALID_UPDATE);
+
+    const updatedOrder = await orderService.updateOrder({ _id: orderId, seller: sellerId }, req.body);
+
+    if (updatedOrder.status === 'ERROR_FOUND') throw new Error('Unable to Update Order in Database');
+
+    if (updatedOrder.status === 'NOT_FOUND') {
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.ORDER_NOT_FOUND);
+    }
+    return res.sendSuccess(updatedOrder.result, MESSAGES.api.UPDATE_SUCCESSFULL, httpCode.StatusCodes.OK);
+  } catch (err) {
+    ErrorHandler.extractError(err);
+    return res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
+  }
+};
+
 // order routes
 
 router.post('/', protect, createOrder);
+// router.get('/', protect, getAllOrder);
 router.get('/:orderId', protect, getOrder);
+router.patch('/:orderId', protect, updateOrder);
 
 module.exports = router;
