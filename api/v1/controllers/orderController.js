@@ -77,6 +77,27 @@ const getOrder = async (req, res) => {
   }
 };
 
+const getAllOrders = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const orders = await orderService.findAllOrder({ $or: [{ buyer: userId }, { seller: userId }] });
+
+    if (orders.status === 'ERROR_FOUND') {
+      throw new Error('Unable to process the request');
+    }
+
+    if (orders.status === 'NOT_FOUND') {
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.NOT_FOUND);
+    }
+
+    return res.sendSuccess(orders.result, MESSAGES.api.FOUND, httpCode.StatusCodes.OK);
+  } catch (err) {
+    ErrorHandler.extractError(err);
+    return res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
+  }
+};
+
 const updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -105,7 +126,7 @@ const updateOrder = async (req, res) => {
 // order routes
 
 router.post('/', protect, createOrder);
-// router.get('/', protect, getAllOrder);
+router.get('/', protect, getAllOrders);
 router.get('/:orderId', protect, getOrder);
 router.patch('/:orderId', protect, updateOrder);
 
