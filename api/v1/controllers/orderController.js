@@ -66,6 +66,7 @@ const getOrder = async (req, res) => {
       return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.NOT_FOUND);
     }
 
+    // can refactor this
     if (!(order.result.buyer.toString() === userId.str || order.result.seller.toString() === userId.toString())) {
       return res.sendError(httpCode.StatusCodes.FORBIDDEN, MESSAGES.api.UNAUTHORIZED_USER);
     }
@@ -81,7 +82,7 @@ const getAllOrders = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const orders = await orderService.findAllOrder({ $or: [{ buyer: userId }, { seller: userId }] });
+    const orders = await orderService.findAllOrdersByUserId({ userId });
 
     if (orders.status === 'ERROR_FOUND') {
       throw new Error('Unable to process the request');

@@ -7,7 +7,7 @@ const userQueries = require('./queries/user');
 const gigQueries = require('./queries/gig');
 const { createUser, findUser, findAllUser, getPassword, updateUser } = require('./queries/user');
 
-const { createOrder, findOrder, updateOrder, findAllOrder } = require('./queries/order');
+const { createOrder, findOrder, updateOrder, findAllOrder, findAllOrdersByUserId } = require('./queries/order');
 
 mongoose.connect(
   mongoDB,
@@ -33,6 +33,7 @@ const dbStoreHandler = {
   findOrder,
   updateOrder,
   findAllOrder,
+  findAllOrdersByUserId,
 };
 
 module.exports = dbStoreHandler;
