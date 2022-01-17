@@ -67,7 +67,9 @@ const getOrder = async (req, res) => {
     }
 
     // can refactor this
-    if (!(order.result.buyer.toString() === userId.str || order.result.seller.toString() === userId.toString())) {
+    if (
+      !(order.result.buyer.toString() === userId.toString() || order.result.seller.toString() === userId.toString())
+    ) {
       return res.sendError(httpCode.StatusCodes.FORBIDDEN, MESSAGES.api.UNAUTHORIZED_USER);
     }
 
