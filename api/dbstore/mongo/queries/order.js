@@ -21,6 +21,17 @@ const findOrder = async (body) => {
   }
 };
 
+const findAllOrdersByUserId = async (body) => {
+  try {
+    const order = await Order.schema.find({ $or: [{ buyer: body.userId }, { seller: body.userId }] });
+
+    return { result: order, hasError: null };
+  } catch (err) {
+    ErrorHandler.extractError(err);
+    return { result: null, hasError: true };
+  }
+};
+
 const findAllOrder = async (body) => {
   try {
     const order = await Order.schema.find(body);
@@ -47,4 +58,4 @@ const updateOrder = async (filter, update) => {
   }
 };
 
-module.exports = { createOrder, findOrder, findAllOrder, updateOrder };
+module.exports = { createOrder, findOrder, findAllOrder, updateOrder, findAllOrdersByUserId };
