@@ -21,7 +21,8 @@ const { adminProtect } = require('../middleware/admin');
 const { protect } = require('../middleware/auth');
 const { generateAuthToken } = require('../../utils/token');
 
-const { generateHash, compareHash, verifyHash } = require('../middleware/hash');
+const { compareHash } = require('../middleware/hash');
+const { verifyHash, generateHash } = require('../../utils/hash');
 const { sendEmailConfirmation } = require('../services/mailService');
 const { userSchema, loginSchema } = require('../validators/user.schema');
 

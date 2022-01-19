@@ -15,7 +15,7 @@ const { MESSAGES } = require('../../../constants');
 
 const { resetPasswordToken, confirmEmailToken } = require('../middleware/auth');
 const { sendResetPasswordLink } = require('../services/mailService');
-const { verifyHash, generateHash } = require('../middleware/hash');
+const { verifyHash, generateHash } = require('../../utils/hash');
 const { userSchema } = require('../validators/user.schema');
 
 // Functions
