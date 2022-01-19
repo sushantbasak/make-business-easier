@@ -9,41 +9,12 @@ const httpCode = require('http-status-codes');
 
 const ErrorHandler = require('../../utils/errorHandler');
 const { MESSAGES } = require('../../../constants');
-const appSettings = require('../../../config/index');
 
 // Imports
 
 const userService = require('../services/userService');
 
 // Functions
-
-const generateHash = async (password) => {
-  try {
-    const hash = await bcrypt.hash(password, +appSettings.saltRound);
-
-    return { status: 'SUCCESS', hash };
-  } catch (ex) {
-    ErrorHandler.extractError(ex);
-
-    return { status: 'ERROR_FOUND' };
-  }
-};
-
-const verifyHash = async (encryptedPassword, password) => {
-  try {
-    const isMatch = await bcrypt.compare(password, encryptedPassword);
-
-    if (!isMatch) {
-      return { status: 'HASH_NOT_MATCHED' };
-    }
-
-    return { status: 'SUCCESS' };
-  } catch (ex) {
-    ErrorHandler.extractError(ex);
-
-    return { status: 'ERROR_FOUND' };
-  }
-};
 
 const compareHash = async (req, res, next) => {
   try {
@@ -75,4 +46,4 @@ const compareHash = async (req, res, next) => {
   }
 };
 
-module.exports = { generateHash, compareHash, verifyHash };
+module.exports = { compareHash };
