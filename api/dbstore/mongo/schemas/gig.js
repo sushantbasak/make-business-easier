@@ -1,20 +1,20 @@
-const mongoose = require("mongoose");
-const { COLLECTIONS } = require("../../../../constants");
+const mongoose = require('mongoose');
+const { COLLECTIONS } = require('../../../../constants');
 
 const gigSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: COLLECTIONS.USER,
-    required: [true, "Please add a user"],
+    required: [true, 'Please add a user'],
   },
   title: {
     type: String,
-    required: [true, "Please add gig title"],
-    maxLength: [50, "Please add title shorter than 50 characters"],
+    required: [true, 'Please add gig title'],
+    maxLength: [50, 'Please add title shorter than 50 characters'],
   },
   category: {
     type: String,
-    default: "general",
+    default: 'general',
   },
   about: {
     type: String,
@@ -28,7 +28,7 @@ const gigSchema = new mongoose.Schema({
   },
   picture: {
     type: String,
-    default: "picture.jpg",
+    default: 'picture.jpg',
   },
   created: {
     type: Date,
