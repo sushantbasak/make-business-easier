@@ -18,8 +18,7 @@ const sendEmailConfirmation = async (user, req) => {
   try {
     const confirmEmailToken = await generateAuthToken(user._id);
 
-    if (confirmEmailToken.status === 'ERROR_FOUND')
-      throw new Error('Unable to generate Auth Token');
+    if (confirmEmailToken.status === 'ERROR_FOUND') throw new Error('Unable to generate Auth Token');
 
     const backendURL = `${serverUrl}/api/v1/auth/confirmemail?token=${confirmEmailToken.token}`;
 
@@ -40,8 +39,7 @@ const sendEmailConfirmation = async (user, req) => {
 
     const result = await sendMail(mailConfig);
 
-    if (result.hasError)
-      throw new Error('Unable to send Email Confirmation Mail');
+    if (result.hasError) throw new Error('Unable to send Email Confirmation Mail');
 
     return { status: 'SUCCESS' };
   } catch (ex) {
@@ -54,8 +52,7 @@ const sendResetPasswordLink = async (user, req) => {
   try {
     const resetPasswordToken = await generateAuthToken(user._id, true);
 
-    if (resetPasswordToken.status === 'ERROR_FOUND')
-      throw new Error('Unable to generate Auth Token');
+    if (resetPasswordToken.status === 'ERROR_FOUND') throw new Error('Unable to generate Auth Token');
 
     const backendURL = `${serverUrl}/api/v1/auth/reset?token=${resetPasswordToken.token}`;
 

@@ -1,28 +1,25 @@
-const mongoose = require("mongoose");
-const { COLLECTIONS, ROLES } = require("../../../../constants");
+const mongoose = require('mongoose');
+const { COLLECTIONS, ROLES } = require('../../../../constants');
 
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: [true, "Please add First name"],
+    required: [true, 'Please add First name'],
   },
   lastName: {
     type: String,
-    required: [true, "Please add Last name"],
+    required: [true, 'Please add Last name'],
   },
   email: {
     type: String,
-    required: [true, "Please add an email"],
+    required: [true, 'Please add an email'],
     unique: true,
     /* eslint-disable */
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      "Please add a valid email",
-    ],
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email'],
   },
   phone: {
     type: String,
-    maxlength: [20, "Phone number can not be longer than 20 characters"],
+    maxlength: [20, 'Phone number can not be longer than 20 characters'],
   },
   role: {
     type: String,
@@ -31,7 +28,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "Please add a password"],
+    required: [true, 'Please add a password'],
   },
   isEmailConfirmed: {
     type: Boolean,

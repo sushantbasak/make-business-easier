@@ -1,5 +1,5 @@
-const { Gig } = require("../schemas");
-const ErrorHandler = require("../../../utils/errorHandler");
+const { Gig } = require('../schemas');
+const ErrorHandler = require('../../../utils/errorHandler');
 
 const createGig = async (body) => {
   try {

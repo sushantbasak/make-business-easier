@@ -63,8 +63,7 @@ const getPassword = async (body) => {
   try {
     const userData = await User.schema.findOne(body);
 
-    if (userData == null || userData === undefined)
-      return { result: null, hasError: null };
+    if (userData == null || userData === undefined) return { result: null, hasError: null };
 
     const { _id, password, isEmailConfirmed } = userData;
 
@@ -83,8 +82,7 @@ const updateUser = async (filter, updateData) => {
       runValidators: true,
     });
 
-    if (userData == null || userData === undefined)
-      return { result: null, hasError: null };
+    if (userData == null || userData === undefined) return { result: null, hasError: null };
 
     const { _id, firstName, lastName, email, role } = userData;
 

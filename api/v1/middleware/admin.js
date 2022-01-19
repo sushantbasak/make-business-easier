@@ -4,10 +4,7 @@ const { MESSAGES, ROLES } = require('../../../constants');
 
 const adminProtect = (req, res, next) => {
   if (!(req.user.role === ROLES.ADMIN || req.user.role === ROLES.ROOT))
-    return res.sendError(
-      httpCode.StatusCodes.UNAUTHORIZED,
-      MESSAGES.api.UNAUTHORIZED_USER
-    );
+    return res.sendError(httpCode.StatusCodes.UNAUTHORIZED, MESSAGES.api.UNAUTHORIZED_USER);
 
   next();
 };
