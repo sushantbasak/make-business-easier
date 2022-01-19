@@ -7,7 +7,7 @@ const ErrorHandler = require('../../utils/errorHandler');
 // Imports
 
 const sendMail = require('../../../init/mail');
-const { generateAuthToken } = require('../middleware/auth');
+const { generateAuthToken } = require('../../utils/token');
 const appSettings = require('../../../config/index');
 
 const { reactUrl, serverUrl } = appSettings;

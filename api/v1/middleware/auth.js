@@ -12,7 +12,7 @@ const ErrorHandler = require('../../utils/errorHandler');
 const { MESSAGES } = require('../../../constants');
 
 const {
-  jwt: { secret, expiresIn, resetsecret, resetexpiresIn },
+  jwt: { secret, resetsecret },
 } = appSettings;
 
 // Imports
@@ -20,26 +20,6 @@ const {
 const userService = require('../services/userService');
 
 // Functions
-
-const generateAuthToken = async (userId, expiry = false) => {
-  try {
-    let expiryTime = expiresIn;
-    let secretValue = secret;
-
-    if (expiry) {
-      expiryTime = resetexpiresIn;
-
-      secretValue = resetsecret;
-    }
-
-    const token = await jwt.sign({ id: userId, date: new Date().getTime() }, secretValue, { expiresIn: expiryTime });
-
-    return { status: 'SUCCESS', token };
-  } catch (ex) {
-    ErrorHandler.extractError(ex);
-    return { status: 'ERROR_FOUND' };
-  }
-};
 
 const protect = async (req, res, next) => {
   try {
@@ -133,7 +113,6 @@ const confirmEmailToken = async (req, res, next) => {
 };
 
 module.exports = {
-  generateAuthToken,
   protect,
   resetPasswordToken,
   confirmEmailToken,

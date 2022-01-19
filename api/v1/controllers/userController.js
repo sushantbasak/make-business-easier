@@ -18,7 +18,8 @@ const { adminProtect } = require('../middleware/admin');
 
 // Imports
 
-const { generateAuthToken, protect } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
+const { generateAuthToken } = require('../../utils/token');
 
 const { generateHash, compareHash, verifyHash } = require('../middleware/hash');
 const { sendEmailConfirmation } = require('../services/mailService');
