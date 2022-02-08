@@ -19,7 +19,7 @@ const { adminProtect } = require('../middleware/admin');
 // Imports
 
 const { protect } = require('../middleware/auth');
-const { generateAuthToken } = require('../../utils/token');
+const { generateUserAuthToken } = require('../../utils/token');
 
 const { compareHash } = require('../middleware/hash');
 const { verifyHash, generateHash } = require('../../utils/hash');
@@ -57,7 +57,7 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const generateToken = await generateAuthToken(req.user._id);
+    const generateToken = await generateUserAuthToken(req.user._id, req.user.role);
 
     if (generateToken.status === 'ERROR_FOUND') throw new Error('Unable to generate Authorization Token');
 
