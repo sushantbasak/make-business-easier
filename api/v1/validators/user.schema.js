@@ -1,6 +1,8 @@
 const { Joi } = require('celebrate');
 
-const Pattern = '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[?!@$%^*-]).{8,}$';
+// const Pattern = '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[?!@$%^*-]).{8,}$';
+
+const Pattern = '.*';
 
 const userSchema = Joi.object().keys({
   mode: Joi.number().allow('').default(1),

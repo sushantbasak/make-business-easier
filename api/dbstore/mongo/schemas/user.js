@@ -1,7 +1,5 @@
-'use strict';
-
 const mongoose = require('mongoose');
-const { COLLECTIONS } = require('../../../../constants');
+const { COLLECTIONS, ROLES } = require('../../../../constants');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -16,18 +14,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add an email'],
     unique: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please add a valid email',
-    ],
+    /* eslint-disable */
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email'],
   },
   phone: {
     type: String,
     maxlength: [20, 'Phone number can not be longer than 20 characters'],
   },
   role: {
-    type: Number,
-    default: 0,
+    type: String,
+    enum: [...Object.values(ROLES)],
+    default: ROLES.CUSTOMER,
   },
   password: {
     type: String,
@@ -45,6 +42,18 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  gigs: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: COLLECTIONS.GIG,
+    },
+  ],
+  cart: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: COLLECTIONS.GIG,
+    },
+  ],
 });
 
 module.exports = {

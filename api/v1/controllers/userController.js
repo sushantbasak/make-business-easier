@@ -1,3 +1,8 @@
+/* eslint-disable no-continue */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable consistent-return */
+
 // Library
 
 const router = require('express').Router();
@@ -9,11 +14,16 @@ const { celebrate } = require('celebrate');
 const ErrorHandler = require('../../utils/errorHandler');
 const userService = require('../services/userService');
 const { MESSAGES } = require('../../../constants');
+const { adminProtect } = require('../middleware/admin');
 
 // Imports
 
-const { generateAuthToken, protect } = require('../middleware/auth');
-const { generateHash, compareHash, verifyHash } = require('../middleware/hash');
+const { protect } = require('../middleware/auth');
+const { generateUserAuthToken } = require('../../utils/token');
+
+const { compareHash } = require('../middleware/hash');
+const { verifyHash, generateHash } = require('../../utils/hash');
+const { sendEmailConfirmation } = require('../services/mailService');
 const { userSchema, loginSchema } = require('../validators/user.schema');
 
 // Functions
@@ -26,54 +36,43 @@ const createUser = async (req, res) => {
   try {
     const getHashedPassword = await generateHash(user.password);
 
-    if (getHashedPassword.status === 'ERROR_FOUND')
-      throw new Error('Unable to generate Hash of given password');
+    if (getHashedPassword.status === 'ERROR_FOUND') throw new Error('Unable to generate Hash of given password');
 
-    user['password'] = getHashedPassword.hash;
+    user.password = getHashedPassword.hash;
 
     const registerUser = await userService.createUser(user);
 
-    if (registerUser.status === 'ERROR_FOUND')
-      throw new Error('Unable to create a new User in database');
+    if (registerUser.status === 'ERROR_FOUND') throw new Error('Unable to create a new User in database');
 
-    console.log(registerUser);
+    const sendMail = await sendEmailConfirmation(registerUser.result, req);
 
-    res.sendSuccess(registerUser.result, MESSAGES.api.CREATED, 201);
+    if (sendMail.status === 'ERROR_FOUND') throw new Error('Unable to send Email Confirmation');
+
+    res.sendSuccess(registerUser.result, MESSAGES.api.CREATED, httpCode.StatusCodes.CREATED);
   } catch (ex) {
     ErrorHandler.extractError(ex);
-    res.sendError(
-      httpCode.StatusCodes.INTERNAL_SERVER_ERROR,
-      MESSAGES.api.SOMETHING_WENT_WRONG
-    );
+    res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
   }
 };
 
 const loginUser = async (req, res) => {
   try {
-    const generateToken = await generateAuthToken(req.user._id);
+    const generateToken = await generateUserAuthToken(req.user._id, req.user.role);
 
-    if (generateToken.status === 'ERROR_FOUND')
-      throw new Error('Unable to generate Authorization Token');
+    if (generateToken.status === 'ERROR_FOUND') throw new Error('Unable to generate Authorization Token');
 
-    res.sendSuccess(
-      { token: generateToken.token },
-      MESSAGES.api.SUCCESS,
-      httpCode.StatusCodes.OK
-    );
+    res.sendSuccess({ token: generateToken.token }, MESSAGES.api.SUCCESS, httpCode.StatusCodes.OK);
   } catch (ex) {
     ErrorHandler.extractError(ex);
-    res.sendError(
-      httpCode.StatusCodes.INTERNAL_SERVER_ERROR,
-      MESSAGES.api.SOMETHING_WENT_WRONG
-    );
+    res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
   }
 };
 
 const getUser = async (req, res) => {
   try {
-    const { email, _id } = req.query;
+    const { email, _id } = req.body;
 
-    let data = { email, _id };
+    const data = { email, _id };
 
     if (email === undefined) delete data.email;
 
@@ -81,23 +80,30 @@ const getUser = async (req, res) => {
 
     const user = await userService.findUser(data);
 
-    if (user.status === 'ERROR_FOUND')
-      throw new Error('Database Error! Unable to perform search Query');
+    if (user.status === 'ERROR_FOUND') throw new Error('Database Error! Unable to perform search Query');
 
     if (user.status === 'NOT_FOUND') {
-      return res.sendError(
-        httpCode.StatusCodes.BAD_REQUEST,
-        MESSAGES.api.USER_NOT_FOUND
-      );
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.USER_NOT_FOUND);
     }
 
     res.sendSuccess(MESSAGES.api.USER_FOUND, httpCode.StatusCodes.OK);
-  } catch {
+  } catch (ex) {
     ErrorHandler.extractError(ex);
-    res.sendError(
-      httpCode.StatusCodes.INTERNAL_SERVER_ERROR,
-      MESSAGES.api.SOMETHING_WENT_WRONG
-    );
+    res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
+  }
+};
+
+const getAllUser = async (req, res) => {
+  try {
+    // eslint-disable-next-line no-shadow
+    const getUser = await userService.findAllUser({});
+
+    if (getUser.status === 'ERROR_FOUND') throw new Error('Unable to fetch Queries from the database');
+
+    res.sendSuccess(getUser.result, MESSAGES.api.SUCCESS, httpCode.StatusCodes.OK);
+  } catch (ex) {
+    ErrorHandler.extractError(ex);
+    res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
   }
 };
 
@@ -105,34 +111,22 @@ const getProfile = async (req, res) => {
   res.sendSuccess(req.user, MESSAGES.api.SUCCESS, httpCode.StatusCodes.OK);
 };
 
-const logoutUser = (req, res) => {
-  res.send('Logout User');
-};
-
 const updateUser = async (req, res) => {
   delete req.body.mode;
 
-  delete req.body.confirmPassword;
-
   const updates = Object.keys(req.body);
 
-  const allowedUpdates = ['firstName', 'lastName', 'email', 'password'];
+  const allowedUpdates = ['firstName', 'lastName', 'email'];
 
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+  const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-  if (!isValidOperation)
-    return res.sendError(
-      httpCode.StatusCodes.BAD_REQUEST,
-      MESSAGES.validations.INVALID_UPDATE
-    );
+  if (!isValidOperation) return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.validations.INVALID_UPDATE);
 
   try {
     let flag = false;
 
-    for (let i = 0; i < updates.length; i++) {
-      let data = updates[i];
+    for (let i = 0; i < updates.length; i += 1) {
+      const data = updates[i];
 
       if (data === 'password' && req.body[data].length) {
         const password = req.body[data];
@@ -141,25 +135,17 @@ const updateUser = async (req, res) => {
           _id: req.user._id,
         });
 
-        if (getSavedPassword.status === 'ERROR_FOUND')
-          throw new Error('Cannot Retrieve Password from Database');
+        if (getSavedPassword.status === 'ERROR_FOUND') throw new Error('Cannot Retrieve Password from Database');
 
-        const Match = await verifyHash(
-          getSavedPassword.result.password,
-          password
-        );
+        const Match = await verifyHash(getSavedPassword.result.password, password);
 
         if (Match.status === 'SUCCESS') continue;
 
-        if (Match.status === 'ERROR_FOUND')
-          throw new Error(
-            'Internal Error Occured During Password Verification'
-          );
+        if (Match.status === 'ERROR_FOUND') throw new Error('Internal Error Occured During Password Verification');
 
         const getHashedPassword = await generateHash(password);
 
-        if (getHashedPassword.status === 'ERROR_FOUND')
-          throw new Error('Cannot generate Hashed Password');
+        if (getHashedPassword.status === 'ERROR_FOUND') throw new Error('Cannot generate Hashed Password');
 
         req.user[data] = getHashedPassword.hash;
 
@@ -173,39 +159,21 @@ const updateUser = async (req, res) => {
     if (!flag) {
       delete req.body.password;
 
-      return res.sendSuccess(
-        req.body,
-        MESSAGES.api.NO_NEW_UPDATE,
-        httpCode.StatusCodes.OK
-      );
+      return res.sendSuccess(req.body, MESSAGES.api.NO_NEW_UPDATE, httpCode.StatusCodes.OK);
     }
 
-    const updatedUser = await userService.updateUser(
-      { _id: req.user._id },
-      req.user
-    );
+    const updatedUser = await userService.updateUser({ _id: req.user._id }, req.user);
 
-    if (updatedUser.status === 'ERROR_FOUND')
-      throw new Error('Unable to Update User in Database');
+    if (updatedUser.status === 'ERROR_FOUND') throw new Error('Unable to Update User in Database');
 
-    if (user.status === 'NOT_FOUND') {
-      return res.sendError(
-        httpCode.StatusCodes.BAD_REQUEST,
-        MESSAGES.api.USER_NOT_FOUND
-      );
+    if (updatedUser.status === 'NOT_FOUND') {
+      return res.sendError(httpCode.StatusCodes.BAD_REQUEST, MESSAGES.api.USER_NOT_FOUND);
     }
 
-    res.sendSuccess(
-      updatedUser.result,
-      MESSAGES.api.UPDATE_SUCCESSFULL,
-      httpCode.StatusCodes.OK
-    );
+    res.sendSuccess(updatedUser.result, MESSAGES.api.UPDATE_SUCCESSFULL, httpCode.StatusCodes.OK);
   } catch (ex) {
     ErrorHandler.extractError(ex);
-    res.sendError(
-      httpCode.StatusCodes.INTERNAL_SERVER_ERROR,
-      MESSAGES.api.SOMETHING_WENT_WRONG
-    );
+    res.sendError(httpCode.StatusCodes.INTERNAL_SERVER_ERROR, MESSAGES.api.SOMETHING_WENT_WRONG);
   }
 };
 
@@ -219,7 +187,7 @@ router.post(
   createUser
 );
 
-router.get(
+router.post(
   '/login',
   celebrate({
     body: loginSchema,
@@ -230,7 +198,9 @@ router.get(
 
 router.get('/profile', protect, getProfile);
 
-router.get('/search', protect, getUser);
+router.post('/search', protect, adminProtect, getUser);
+
+router.get('/all', protect, adminProtect, getAllUser);
 
 router.patch(
   '/update',
@@ -240,7 +210,5 @@ router.patch(
   }),
   updateUser
 );
-
-router.get('/logout', protect, logoutUser);
 
 module.exports = router;

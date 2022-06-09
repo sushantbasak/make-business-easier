@@ -41,11 +41,31 @@ const findUser = async (body) => {
   }
 };
 
+const findAllUser = async (body) => {
+  try {
+    const result = await User.schema.find(body);
+
+    if (result == null) return { result: null, hasError: null };
+
+    const final = result.toJSON();
+
+    delete final.password;
+
+    return { result: final, hasError: null };
+  } catch (ex) {
+    ErrorHandler.extractError(ex);
+
+    return { result: null, hasError: true };
+  }
+};
+
 const getPassword = async (body) => {
   try {
-    const { _id, password, isEmailConfirmed } = await User.schema.findOne(body);
+    const userData = await User.schema.findOne(body);
 
-    if (_id == null) return { result: null, hasError: null };
+    if (userData == null || userData === undefined) return { result: null, hasError: null };
+
+    const { _id, password, isEmailConfirmed } = userData;
 
     return { result: { _id, password, isEmailConfirmed }, hasError: null };
   } catch (ex) {
@@ -57,18 +77,14 @@ const getPassword = async (body) => {
 
 const updateUser = async (filter, updateData) => {
   try {
-    const {
-      _id,
-      firstName,
-      lastName,
-      email,
-      role,
-    } = await User.schema.findOneAndUpdate(filter, updateData, {
+    const userData = await User.schema.findOneAndUpdate(filter, updateData, {
       new: true,
       runValidators: true,
     });
 
-    if (_id == null) return { result: null, hasError: null };
+    if (userData == null || userData === undefined) return { result: null, hasError: null };
+
+    const { _id, firstName, lastName, email, role } = userData;
 
     return {
       result: { _id, firstName, lastName, email, role },
@@ -81,4 +97,4 @@ const updateUser = async (filter, updateData) => {
   }
 };
 
-module.exports = { createUser, findUser, getPassword, updateUser };
+module.exports = { createUser, findUser, findAllUser, getPassword, updateUser };

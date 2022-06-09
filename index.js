@@ -1,7 +1,9 @@
-'use strict';
-const appSettings = require('./config');
-const middleware = require('./middleware');
+/* eslint-disable no-console */
 const dotenv = require('dotenv');
+const appSettings = require('./config');
+
+const middleware = require('./middleware');
+
 dotenv.config();
 
 middleware()
